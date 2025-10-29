@@ -1,0 +1,18 @@
+{
+  "domain": "blitzortung_image",
+  "name": "Blitzortung Image",
+  "codeowners": [
+    "@MarcoGos"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/MarcoGos/blitzortung_image",
+  "homekit": {},
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/MarcoGos/blitzortung_image/issues",
+  "requirements": [],
+  "ssdp": [],
+  "version": "0.0.1",
+  "zeroconf": []
+}

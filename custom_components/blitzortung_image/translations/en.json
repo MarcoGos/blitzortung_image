@@ -1,0 +1,52 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Integration already configured."
+        },
+        "error": {
+            "invalid_hostname": "Invalid hostname name",
+            "cannot_connect": "Failed to connect",
+            "invalid_auth": "Failed authorization",
+            "domain_not_found": "Domain not found",
+            "timeout": "Connection timed out",
+            "unknown": "Unexpected error"
+        },
+        "step": {
+            "user": {
+                "description": "Blitzortung information",
+                "data": {
+                    "username": "Username",
+                    "password": "Password"
+                }
+            }
+        }
+    },
+    "entity": {
+        "camera": {
+            "lightning": {
+                "name": "Lightning Radar"
+            }
+        },
+        "number": {
+            "marker_latitude": {
+                "name": "Marker Latitude"
+            },
+            "marker_longitude": {
+                "name": "Marker Longitude"
+            }
+        },
+        "sensor": {
+            "last_updated": {
+                "name": "Last Updated"
+            }
+        },
+        "switch": {
+            "show_marker": {
+                "name": "Show Marker"
+            },
+            "show_legend": {
+                "name": "Show Legend"
+            }
+        }
+    }
+}

@@ -1,0 +1,52 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Integratie reeds geconfigureerd."
+        },
+        "error": {
+            "invalid_hostname": "Ongeldige hostnaam",
+            "cannot_connect": "Verbinding mislukt",
+            "invalid_auth": "Ongeldige autorisatie",
+            "domain_not_found": "Domein niet gevonden",
+            "timeout": "Verbindingstime-out",
+            "unknown": "Onverwachte fout"
+        },
+        "step": {
+            "user": {
+                "description": "Blitzortung informatie",
+                "data": {
+                    "username": "Gebruikersnaam",
+                    "password": "Wachtwoord"
+                }
+            }
+        }
+    },
+    "entity": {
+        "camera": {
+            "lightning": {
+                "name": "Bliksemradar"
+            }
+        },
+        "number": {
+            "marker_latitude": {
+                "name": "Marker breedtegraad"
+            },
+            "marker_longitude": {
+                "name": "Marker lengtegraad"
+            }
+        },
+        "sensor": {
+            "last_updated": {
+                "name": "Laatst bijgewerkt"
+            }
+        },
+        "switch": {
+            "show_marker": {
+                "name": "Toon markering"
+            },
+            "show_legend": {
+                "name": "Toon legenda"
+            }
+        }
+    }
+}
