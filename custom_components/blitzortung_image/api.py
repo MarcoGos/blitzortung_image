@@ -312,7 +312,8 @@ class BlitzortungApi:
         for index, image_data in enumerate(self._images):
             if not os.path.exists(image_data):
                 continue
-            # Add marker location if set
+
+            # Add marker location and/or legend if set
 
             if (
                 self.setting(SHOW_MARKER)
@@ -321,7 +322,7 @@ class BlitzortungApi:
             ) or self.setting(SHOW_LEGEND):
                 final = Image.open(image_data).convert("RGBA")
 
-                if self.setting(MARKER_LATITUDE):
+                if self.setting(SHOW_LEGEND):
                     legend = self.__get_legend_image()
                     final.paste(legend, (5, 5), legend)
 
