@@ -53,14 +53,15 @@ class BlitzortungApi:
     _camera: bool = False
     _username: str = ""
     _password: str = ""
-    # _left_longitude: float = 1.556
-    # _right_longitude: float = 8.8
-    # _top_latitude: float = 54.239
-    # _bottom_latitude: float = 47.270
-    _left_longitude: float = -12.28
-    _right_longitude: float = 34.98
+    _left_longitude: float = 1.556
+    _right_longitude: float = 8.8
     _top_latitude: float = 54.239
-    _bottom_latitude: float = 35.77
+    _bottom_latitude: float = 47.270
+    # test values for europe
+    # _left_longitude: float = -12.28
+    # _right_longitude: float = 34.98
+    # _top_latitude: float = 54.239
+    # _bottom_latitude: float = 35.77
 
     def __init__(self, hass: HomeAssistant, username: str, password: str) -> None:
         self._hass = hass
