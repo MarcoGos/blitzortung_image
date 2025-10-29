@@ -12,7 +12,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.components.switch.const import DOMAIN as SWITCH_DOMAIN
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .coordinator import BlitzortingDataUpdateCoordinator
+from .coordinator import BlitzortungDataUpdateCoordinator
 from .const import DOMAIN, DEFAULT_NAME, SHOW_MARKER, SHOW_LEGEND
 from .entity import BlitzortungImageEntity
 
@@ -61,7 +61,7 @@ class BlitzortungImageSwitch(BlitzortungImageEntity, SwitchEntity):
 
     def __init__(
         self,
-        coordinator: BlitzortingDataUpdateCoordinator,
+        coordinator: BlitzortungDataUpdateCoordinator,
         entry_id: str,
         description: SwitchEntityDescription,
     ) -> None:

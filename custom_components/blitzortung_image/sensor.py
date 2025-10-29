@@ -10,7 +10,7 @@ from homeassistant.components.sensor.const import (
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 from .const import DOMAIN, DEFAULT_NAME, LAST_UPDATED
-from .coordinator import BlitzortingDataUpdateCoordinator
+from .coordinator import BlitzortungDataUpdateCoordinator
 from .entity import BlitzortungImageEntity
 
 DESCRIPTIONS: list[SensorEntityDescription] = [
@@ -51,7 +51,7 @@ class BlitzortungImageSensor(BlitzortungImageEntity, SensorEntity):
 
     def __init__(
         self,
-        coordinator: BlitzortingDataUpdateCoordinator,
+        coordinator: BlitzortungDataUpdateCoordinator,
         entry_id: str,
         description: SensorEntityDescription,
     ) -> None:

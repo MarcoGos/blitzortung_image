@@ -1,4 +1,4 @@
-"""Blitzorting Image Number Entities"""
+"""Blitzortung Image Number Entities"""
 
 from homeassistant.components.number import NumberEntity, NumberEntityDescription
 from homeassistant.config_entries import ConfigEntry
@@ -7,7 +7,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.components.number.const import DOMAIN as NUMBER_DOMAIN, NumberMode
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .coordinator import BlitzortingDataUpdateCoordinator
+from .coordinator import BlitzortungDataUpdateCoordinator
 from .const import DOMAIN, DEFAULT_NAME, MARKER_LATITUDE, MARKER_LONGITUDE
 from .entity import BlitzortungImageEntity
 
@@ -38,7 +38,7 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up Blitzorting Image numbers based on a config entry."""
+    """Set up Blitzortung Image numbers based on a config entry."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
     entities: list[BlitzortungImageNumber] = []
@@ -57,11 +57,11 @@ async def async_setup_entry(
 
 
 class BlitzortungImageNumber(BlitzortungImageEntity, NumberEntity):
-    """Representation of a Blitzorting Image number entity."""
+    """Representation of a Blitzortung Image number entity."""
 
     def __init__(
         self,
-        coordinator: BlitzortingDataUpdateCoordinator,
+        coordinator: BlitzortungDataUpdateCoordinator,
         entry_id: str,
         description: NumberEntityDescription,
     ) -> None:

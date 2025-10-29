@@ -9,7 +9,7 @@ from homeassistant.const import Platform
 
 from .api import BlitzortungApi
 from .const import DOMAIN
-from .coordinator import BlitzortingDataUpdateCoordinator
+from .coordinator import BlitzortungDataUpdateCoordinator
 from .services import BlitzortungImageServicesSetup
 
 PLATFORMS: list[Platform] = [
@@ -31,7 +31,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     api = BlitzortungApi(hass, entry.data["username"], entry.data["password"])
 
-    hass.data[DOMAIN][entry.entry_id] = coordinator = BlitzortingDataUpdateCoordinator(
+    hass.data[DOMAIN][entry.entry_id] = coordinator = BlitzortungDataUpdateCoordinator(
         hass=hass,
         api=api,
         config_entry=entry,

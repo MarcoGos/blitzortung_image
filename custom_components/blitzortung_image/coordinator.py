@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import logging
 
 from homeassistant import config_entries
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.core import HomeAssistant
 
 from .api import BlitzortungApi
@@ -16,7 +16,7 @@ from .const import (
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-class BlitzortingDataUpdateCoordinator(DataUpdateCoordinator):
+class BlitzortungDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
     def __init__(

@@ -3,7 +3,7 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
 
-from .coordinator import BlitzortingDataUpdateCoordinator
+from .coordinator import BlitzortungDataUpdateCoordinator
 from .const import DOMAIN
 
 
@@ -14,7 +14,7 @@ class BlitzortungImageServicesSetup:
         """Initialise services."""
         self.hass = hass
         self.config_entry = config_entry
-        self.coordinator: BlitzortingDataUpdateCoordinator = hass.data[DOMAIN][
+        self.coordinator: BlitzortungDataUpdateCoordinator = hass.data[DOMAIN][
             config_entry.entry_id
         ]
 

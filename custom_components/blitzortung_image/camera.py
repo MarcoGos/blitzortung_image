@@ -1,4 +1,4 @@
-"""Blitzorting Image Camera Component for Home Assistant."""
+"""Blitzortung Image Camera Component for Home Assistant."""
 
 from dataclasses import dataclass
 from homeassistant.config_entries import ConfigEntry
@@ -8,13 +8,13 @@ from homeassistant.components.camera.const import DOMAIN as CAMERA_DOMAIN
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DEFAULT_NAME, DOMAIN, LIGHTNING
-from .coordinator import BlitzortingDataUpdateCoordinator
+from .coordinator import BlitzortungDataUpdateCoordinator
 from .entity import BlitzortungImageEntity
 
 
 @dataclass(frozen=True, kw_only=True)
 class BlitzortungImageCameraEntityDescription(CameraEntityDescription):
-    """Describes Blitzorting Image camera entity."""
+    """Describes Blitzortung Image camera entity."""
 
     key: str | None = None
     translation_key: str | None = None
@@ -37,7 +37,7 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Blitzorting Image cameras based on a config entry."""
+    """Set up Blitzortung Image cameras based on a config entry."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
     entities: list[BlitzortungImageCamera] = []
@@ -60,7 +60,7 @@ class BlitzortungImageCamera(BlitzortungImageEntity, Camera):
 
     def __init__(
         self,
-        coordinator: BlitzortingDataUpdateCoordinator,
+        coordinator: BlitzortungDataUpdateCoordinator,
         entry_id: str,
         description: BlitzortungImageCameraEntityDescription,
     ) -> None:

@@ -23,7 +23,7 @@ Via HACS:
 - Username
 - Password
 
-This information will be provides ones you contribute to the Blitzorting lightning detection network.
+This information will be provides ones you contribute to the Blitzortung lightning detection network. See https://www.blitzortung.org/nl/cover_your_area.php for more information.
 
 ## What to expect
 

@@ -6,17 +6,17 @@ from homeassistant.helpers.entity import EntityDescription
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DEFAULT_NAME, DOMAIN, MANUFACTURER, NAME
-from .coordinator import BlitzortingDataUpdateCoordinator
+from .coordinator import BlitzortungDataUpdateCoordinator
 
 
-class BlitzortungImageEntity(CoordinatorEntity[BlitzortingDataUpdateCoordinator]):
+class BlitzortungImageEntity(CoordinatorEntity[BlitzortungDataUpdateCoordinator]):
     """Base class for Blitzortung Image entities."""
 
     _attr_has_entity_name = True
 
     def __init__(
         self,
-        coordinator: BlitzortingDataUpdateCoordinator,
+        coordinator: BlitzortungDataUpdateCoordinator,
         description: EntityDescription,
         entry_id: str,
     ) -> None:

@@ -102,7 +102,7 @@ class BlitzortungApi:
         return self._settings.get(key, None)
 
     async def async_get_new_images(self) -> None:
-        """Fetch new images from the Blitzorting API."""
+        """Fetch new images from the Blitzortung API."""
         if not self.__is_camera_registered():
             return
         if not self._images:
@@ -125,7 +125,7 @@ class BlitzortungApi:
         )
 
     async def test_connection(self) -> bool:
-        """Test connection to the Blitzorting API."""
+        """Test connection to theuBlitzortung API."""
         url = f"https://{self._username}:{self._password}@data.blitzortung.org/Data/Protected/last_strikes.php?number=1&sig=0"
         async with self._session.get(url, headers=self._headers) as response:
             if response.status == 200:
@@ -134,7 +134,7 @@ class BlitzortungApi:
                 raise BlitzortungAuthenticationError()
 
     def get_blitzortung_url(self) -> str:
-        """Get the URL for the Blitzorting API."""
+        """Get the URL for the Blitzortung API."""
         # Get last 5 minutes of data
         ts = datetime.now().timestamp() - timedelta(minutes=5).total_seconds()
         timestamp_ns = int(ts * 1_000_000_000)
