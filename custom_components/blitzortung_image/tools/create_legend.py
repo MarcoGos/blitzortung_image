@@ -18,14 +18,18 @@ def __determine_color(strike_time: float) -> tuple[int, int, int]:
     return (191, 0, 0)  # Dark Red for older strikes
 
 
-im = Image.new("RGBA", (90, 125))  # , color=(12, 66, 156, 0))
+ages = [20, 40, 60, 80, 100]
+
+im = Image.new("RGBA", (90, len(ages) * 20 + 5))  # , color=(12, 66, 156, 0))
 
 draw = ImageDraw.Draw(im)
 
-draw.rounded_rectangle((0, 0, 89, 124), radius=10, fill=(12, 66, 156))
+draw.rounded_rectangle(
+    (0, 0, im.width - 1, im.height - 1), radius=10, fill=(12, 66, 156)
+)
 
 font = ImageFont.load_default(16)
-for i in [20, 40, 60, 80, 100, 120]:
+for i in ages:
     x = 10
     y = 12 + (i - 20)
     draw.ellipse(

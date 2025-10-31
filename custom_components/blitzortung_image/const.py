@@ -18,6 +18,7 @@ MARKER_LATITUDE = "marker_latitude"
 MARKER_LONGITUDE = "marker_longitude"
 SHOW_MARKER = "show_marker"
 SHOW_LEGEND = "show_legend"
+SHOW_ACTIVITY_GRAPH = "show_activity_graph"
 LAST_UPDATED = "last_updated"
 LIGHTNING = "lightning"
 

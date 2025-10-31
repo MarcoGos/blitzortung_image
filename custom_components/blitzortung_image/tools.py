@@ -1,6 +1,9 @@
 """Calculate Mercator position based on latitude and longitude."""
 
 import math
+from PIL import Image, ImageDraw, ImageFont
+from typing import Tuple
+from datetime import datetime
 
 
 def calculate_mercator_position(
@@ -30,3 +33,27 @@ def calculate_mercator_position(
 def deg2rad(degrees: float) -> float:
     """Convert degrees to radians."""
     return degrees * math.pi / 180
+
+
+def draw_rotated_text(
+    image: Image.Image,
+    font: ImageFont.ImageFont,
+    text: str,
+    angle: int,
+    x: int,
+    y: int,
+    fill: Tuple[int, int, int] = (255, 255, 255),
+) -> None:
+    """Draw text rotated by angle at position (x, y) on the image."""
+    # Create a new image with transparent background to draw the text
+    # draw = ImageDraw.Draw(image)
+    # bbox = draw.textbbox((0, 0), text, font=font)
+    bbox = font.getbbox(text)
+    text_width, text_height = int(bbox[2] - bbox[0]), int(bbox[3] - bbox[1])
+    text_img = Image.new("RGBA", (text_width, text_height + 2), (0, 0, 0, 0))
+    text_draw = ImageDraw.Draw(text_img)
+    text_draw.text((0, 0), text, font=font, fill=fill)
+    # Rotate the text image
+    rotated = text_img.rotate(angle, expand=1)
+    # Paste the rotated text onto the original image
+    image.paste(rotated, (x - 1, 0), rotated)

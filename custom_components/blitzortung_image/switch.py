@@ -13,7 +13,7 @@ from homeassistant.components.switch.const import DOMAIN as SWITCH_DOMAIN
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .coordinator import BlitzortungDataUpdateCoordinator
-from .const import DOMAIN, DEFAULT_NAME, SHOW_MARKER, SHOW_LEGEND
+from .const import DOMAIN, DEFAULT_NAME, SHOW_MARKER, SHOW_LEGEND, SHOW_ACTIVITY_GRAPH
 from .entity import BlitzortungImageEntity
 
 DESCRIPTIONS: list[SwitchEntityDescription] = [
@@ -29,6 +29,13 @@ DESCRIPTIONS: list[SwitchEntityDescription] = [
         device_class=SwitchDeviceClass.SWITCH,
         entity_category=EntityCategory.CONFIG,
         icon="mdi:map-legend",
+    ),
+    SwitchEntityDescription(
+        key=SHOW_ACTIVITY_GRAPH,
+        translation_key=SHOW_ACTIVITY_GRAPH,
+        device_class=SwitchDeviceClass.SWITCH,
+        entity_category=EntityCategory.CONFIG,
+        icon="mdi:chart-bar",
     ),
 ]
 

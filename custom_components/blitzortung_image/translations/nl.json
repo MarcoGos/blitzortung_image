@@ -46,6 +46,9 @@
             },
             "show_legend": {
                 "name": "Toon legenda"
+            },
+            "show_activity_graph": {
+                "name": "Toon activiteitsgrafiek"
             }
         }
     }

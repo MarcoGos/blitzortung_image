@@ -46,6 +46,9 @@
             },
             "show_legend": {
                 "name": "Show Legend"
+            },
+            "show_activity_graph": {
+                "name": "Show Activity Graph"
             }
         }
     }
