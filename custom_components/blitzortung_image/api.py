@@ -127,8 +127,6 @@ class BlitzortungApi:
         """Fetch new images from the Blitzortung API."""
         if not self.__is_camera_registered():
             return
-        if not self._image_filenames:
-            await self.__async_build_images_filenames()
 
         time_val = datetime.now()
         lightning_data = await self.__async_get_lightning_data()
@@ -321,33 +319,42 @@ class BlitzortungApi:
             fill=line_color,
             width=1,
         )
-        if max_activity > 0:
-            for key, value in activity_data.items():
-                if value == 0:
-                    continue
-                x0 = 1 + (max_key - key) // 2
-                x1 = x0 + 9
-                y1 = height - 2
-                y0 = y1 - int((value["activity"] / max_activity) * y1)
-                draw.rectangle(
-                    (
-                        x0,
-                        y0,
-                        x1,
-                        y1,
-                    ),
-                    fill=self.__determine_color(datetime.now().timestamp() - key * 60),
+        if max_activity == 0:
+            draw.text(
+                (image.width // 2, image.height // 2),
+                "N/A",
+                font=ImageFont.load_default(15),
+                fill=(255, 255, 255),
+                anchor="mm",
+            )
+            return image
+
+        for key, value in activity_data.items():
+            if value == 0:
+                continue
+            x0 = 1 + (max_key - key) // 2
+            x1 = x0 + 9
+            y1 = height - 2
+            y0 = y1 - int((value["activity"] / max_activity) * y1)
+            draw.rectangle(
+                (
+                    x0,
+                    y0,
+                    x1,
+                    y1,
+                ),
+                fill=self.__determine_color(datetime.now().timestamp() - key * 60),
+            )
+            if key == max_activity_key:
+                draw_rotated_text(
+                    draw._image,
+                    font,  # type: ignore
+                    f"{max_activity}",
+                    90,
+                    x0,
+                    2,
+                    fill=(0, 0, 0),
                 )
-                if key == max_activity_key:
-                    draw_rotated_text(
-                        draw._image,
-                        font,  # type: ignore
-                        f"{max_activity}",
-                        90,
-                        x0,
-                        2,
-                        fill=(0, 0, 0),
-                    )
         return image
 
     async def __async_save_activity_data(self, time_val: datetime) -> None:
@@ -491,9 +498,6 @@ class BlitzortungApi:
                 duration=duration if len(duration) > 1 else duration[0],
             )
 
-    async def __async_build_images_filenames(self) -> None:
-        await self._hass.async_add_executor_job(self.__build_images_list)
-
     def __build_images_list(self) -> None:
         self._image_filenames = []
         files = glob.glob(os.path.join(self.__get_storage_path(), "*.png"))
@@ -518,8 +522,8 @@ class BlitzortungApi:
 
     async def async_force_refresh(self) -> None:
         """Force refresh of the images."""
-        _LOGGER.debug("Refreshing Blitzortung Image images")
         if self.__is_camera_registered():
+            _LOGGER.debug("Refreshing Blitzortung Image images")
             await self.__async_create_animated_gif()
 
     def __is_camera_registered(self) -> bool:
@@ -534,6 +538,8 @@ class BlitzortungApi:
         storage_path = self.__get_storage_path()
         if not os.path.exists(storage_path):
             os.makedirs(storage_path, exist_ok=True)
+        if not self._image_filenames:
+            self.__build_images_list()
 
     async def async_unregister_camera(self) -> None:
         """Unregister a camera for the given image type."""
