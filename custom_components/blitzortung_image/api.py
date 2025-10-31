@@ -426,18 +426,14 @@ class BlitzortungApi:
             if not os.path.exists(image_filepath):
                 continue
 
-            # Add marker location
             final = Image.open(image_filepath).convert("RGBA")
+
+            # Add marker
             if (
                 self.setting(SHOW_MARKER)
                 and self.setting(MARKER_LONGITUDE)
                 and self.setting(MARKER_LATITUDE)
             ):
-                legend = self.__get_legend_image()
-                final.paste(legend, (5, 5), legend)
-
-            # Add legend
-            if self.setting(SHOW_MARKER):
                 marker = self.__get_marker_image().resize((40, 40))
                 marker_x, marker_y = calculate_mercator_position(
                     self.setting(MARKER_LATITUDE),
@@ -455,6 +451,11 @@ class BlitzortungApi:
                     ),
                     marker,
                 )
+
+            # Add legend
+            if self.setting(SHOW_LEGEND):
+                legend = self.__get_legend_image()
+                final.paste(legend, (5, 5), legend)
 
             # Add activity graph
             if self.setting(SHOW_ACTIVITY_GRAPH):
