@@ -38,6 +38,8 @@ The following sensors will be registered
 
 The following switch will be registered
 
+- Show Activity Graph
+    - This will show the activity graph
 - Show/Hide Marker
     - This will automatically update all enabled images (cameras)
 - Show Legend
