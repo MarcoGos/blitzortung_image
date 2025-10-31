@@ -321,32 +321,33 @@ class BlitzortungApi:
             fill=line_color,
             width=1,
         )
-        for key, value in activity_data.items():
-            if value == 0:
-                continue
-            x0 = 1 + (max_key - key) // 2
-            x1 = x0 + 9
-            y1 = height - 2
-            y0 = y1 - int((value["activity"] / max_activity) * y1)
-            draw.rectangle(
-                (
-                    x0,
-                    y0,
-                    x1,
-                    y1,
-                ),
-                fill=self.__determine_color(datetime.now().timestamp() - key * 60),
-            )
-            if key == max_activity_key:
-                draw_rotated_text(
-                    draw._image,
-                    font,  # type: ignore
-                    f"{max_activity}",
-                    90,
-                    x0,
-                    2,
-                    fill=(0, 0, 0),
+        if max_activity > 0:
+            for key, value in activity_data.items():
+                if value == 0:
+                    continue
+                x0 = 1 + (max_key - key) // 2
+                x1 = x0 + 9
+                y1 = height - 2
+                y0 = y1 - int((value["activity"] / max_activity) * y1)
+                draw.rectangle(
+                    (
+                        x0,
+                        y0,
+                        x1,
+                        y1,
+                    ),
+                    fill=self.__determine_color(datetime.now().timestamp() - key * 60),
                 )
+                if key == max_activity_key:
+                    draw_rotated_text(
+                        draw._image,
+                        font,  # type: ignore
+                        f"{max_activity}",
+                        90,
+                        x0,
+                        2,
+                        fill=(0, 0, 0),
+                    )
         return image
 
     async def __async_save_activity_data(self, time_val: datetime) -> None:
