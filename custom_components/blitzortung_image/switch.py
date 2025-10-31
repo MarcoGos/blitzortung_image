@@ -88,12 +88,16 @@ class BlitzortungImageSwitch(BlitzortungImageEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the switch on."""
-        self.coordinator.api.set_setting(self.entity_description.key, True, store=True)
+        await self.coordinator.api.async_set_setting(
+            self.entity_description.key, True, store=True
+        )
         await self.coordinator.api.async_force_refresh()
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the switch off."""
-        self.coordinator.api.set_setting(self.entity_description.key, False, store=True)
+        await self.coordinator.api.async_set_setting(
+            self.entity_description.key, False, store=True
+        )
         await self.coordinator.api.async_force_refresh()
         self.async_write_ha_state()

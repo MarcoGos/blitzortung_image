@@ -86,38 +86,74 @@ class BlitzortungApi:
         self._hass = hass
         self._timezone = self._hass.config.time_zone
         self._session = async_get_clientsession(self._hass)
-        self.set_setting(
-            MARKER_LONGITUDE,
-            (
-                self._hass.data.get(DOMAIN, {}).get(MARKER_LONGITUDE, None)
-                or self._hass.config.longitude
-            ),
-        )
-        self.set_setting(
-            MARKER_LATITUDE,
-            (
-                self._hass.data.get(DOMAIN, {}).get(MARKER_LATITUDE, None)
-                or self._hass.config.latitude
-            ),
-        )
-        self.set_setting(SHOW_MARKER, hass.data.get(DOMAIN, {}).get(SHOW_MARKER, True))
-        self.set_setting(SHOW_LEGEND, hass.data.get(DOMAIN, {}).get(SHOW_LEGEND, True))
-        self.set_setting(
-            SHOW_ACTIVITY_GRAPH,
-            hass.data.get(DOMAIN, {}).get(SHOW_ACTIVITY_GRAPH, True),
-        )
+        self._storage_path = self._hass.config.path(STORAGE_DIR, DOMAIN)
         self._image_filenames = []
         self._camera = False
-        self._storage_path = self._hass.config.path(STORAGE_DIR, DOMAIN)
         self._username = username
         self._password = password
 
-    def set_setting(self, key: str, value: Any, store: bool = False) -> None:
+    async def async_initialize(self):
+        """Initialize the API client."""
+        if not await self.async_load_settings():
+            await self.async_set_setting(
+                MARKER_LONGITUDE,
+                (
+                    self._hass.data.get(DOMAIN, {}).get(MARKER_LONGITUDE, None)
+                    or self._hass.config.longitude
+                ),
+            )
+            await self.async_set_setting(
+                MARKER_LATITUDE,
+                (
+                    self._hass.data.get(DOMAIN, {}).get(MARKER_LATITUDE, None)
+                    or self._hass.config.latitude
+                ),
+            )
+            await self.async_set_setting(
+                SHOW_MARKER, self._hass.data.get(DOMAIN, {}).get(SHOW_MARKER, True)
+            )
+            await self.async_set_setting(
+                SHOW_LEGEND, self._hass.data.get(DOMAIN, {}).get(SHOW_LEGEND, True)
+            )
+            await self.async_set_setting(
+                SHOW_ACTIVITY_GRAPH,
+                self._hass.data.get(DOMAIN, {}).get(SHOW_ACTIVITY_GRAPH, True),
+            )
+
+    async def async_load_settings(self) -> bool:
+        """Load settings for the API."""
+        return await self._hass.async_add_executor_job(self.__load_settings)
+
+    def __load_settings(self) -> bool:
+        """Load settings for the API."""
+        settings_path = f"{self._storage_path}/settings.json"
+        if not os.path.exists(settings_path):
+            return False
+        with open(settings_path, "r", encoding="utf-8") as f:
+            self._settings = json.load(f)
+            return True
+
+    async def async_save_settings(self) -> None:
+        """Save settings for the API."""
+        await self._hass.async_add_executor_job(self.__save_settings)
+
+    def __save_settings(self) -> None:
+        """Save settings for the API, filtering out datetime values."""
+        filtered_settings = {
+            k: v for k, v in self._settings.items() if not isinstance(v, datetime)
+        }
+        with open(f"{self._storage_path}/settings.json", "w", encoding="utf-8") as f:
+            json.dump(filtered_settings, f)
+
+    async def async_set_setting(
+        self, key: str, value: Any, store: bool = False
+    ) -> None:
         """Set a setting for the API."""
         self._settings[key] = value
         if store:
             self._hass.data[DOMAIN][key] = value
         _LOGGER.debug("Setting parameter %s to %s", key, value)
+        await self.async_save_settings()
 
     def setting(self, key: str) -> Any:
         """Get a setting for the API."""
@@ -137,7 +173,7 @@ class BlitzortungApi:
 
         await self.__async_create_animated_gif()
 
-        self.set_setting(
+        await self.async_set_setting(
             LAST_UPDATED,
             datetime.now().replace(tzinfo=ZoneInfo(self._hass.config.time_zone)),
         )

@@ -30,6 +30,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.debug("entry.data: %s", entry.data)
 
     api = BlitzortungApi(hass, entry.data["username"], entry.data["password"])
+    await api.async_initialize()
 
     hass.data[DOMAIN][entry.entry_id] = coordinator = BlitzortungDataUpdateCoordinator(
         hass=hass,

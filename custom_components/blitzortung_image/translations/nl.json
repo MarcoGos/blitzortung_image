@@ -51,5 +51,11 @@
                 "name": "Toon activiteitsgrafiek"
             }
         }
+    },
+    "services": {
+        "force_update": {
+            "name": "Forceer update",
+            "description": "Forceer een update van de afbeelding."
+        }
     }
 }

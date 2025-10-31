@@ -78,5 +78,7 @@ class BlitzortungImageNumber(BlitzortungImageEntity, NumberEntity):
 
     async def async_set_native_value(self, value: float) -> None:
         """Set the number value."""
-        self.coordinator.api.set_setting(self.entity_description.key, value, store=True)
+        await self.coordinator.api.async_set_setting(
+            self.entity_description.key, value, store=True
+        )
         self.async_write_ha_state()

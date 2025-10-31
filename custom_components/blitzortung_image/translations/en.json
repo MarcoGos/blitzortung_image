@@ -51,5 +51,11 @@
                 "name": "Show Activity Graph"
             }
         }
+    },
+    "services": {
+        "force_update": {
+            "name": "Force Update",
+            "description": "Force an update of the image."
+        }
     }
 }
