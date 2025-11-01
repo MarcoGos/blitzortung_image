@@ -7,7 +7,7 @@
 
 # Blitzortung Image
 
-This is a custom integration of the Blitzortung Image. It will provide an animated image representing the lightning data (only for The Netherlands). You need to be an active contributer to the Blitzortung lightning detection network.
+This is a custom integration of the Blitzortung Image. It will provide an animated image representing the lightning data (only for The Netherlands). You need to be a participant of the Blitzortung lightning detection network project.
 
 ## Installation
 
@@ -23,7 +23,7 @@ Via HACS:
 - Username
 - Password
 
-This information will be provides ones you contribute to the Blitzortung lightning detection network. See https://www.blitzortung.org/nl/cover_your_area.php for more information.
+This information will be provided ones you become a participant of the Blitzortung lightning detection network project. See https://www.blitzortung.org/en/cover_your_area.php for more information.
 
 ## What to expect
 
