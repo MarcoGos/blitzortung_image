@@ -337,11 +337,12 @@ class BlitzortungApi:
         max_activity_key = max(
             activity_data, key=lambda k: activity_data[k]["activity"]
         )
+        column_width = 15
         max_key = max(activity_data.keys())
         font = ImageFont.load_default(10)
-        width, height = (len(activity_data) * 10 + 3, 75)
+        width, height = (len(activity_data) * column_width + 3, 75)
 
-        image = Image.new("RGBA", (len(activity_data) * 10 + 3, 75), (0, 0, 0, 0))
+        image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
 
         line_color = (255, 255, 255)
@@ -368,8 +369,8 @@ class BlitzortungApi:
         for key, value in activity_data.items():
             if value == 0:
                 continue
-            x0 = 1 + (max_key - key) // 2
-            x1 = x0 + 9
+            x0 = 1 + (max_key - key) // 20 * column_width
+            x1 = x0 + column_width - 1
             y1 = height - 2
             y0 = y1 - int((value["activity"] / max_activity) * y1)
             draw.rectangle(
@@ -387,8 +388,7 @@ class BlitzortungApi:
                     font,  # type: ignore
                     f"{max_activity}",
                     90,
-                    x0,
-                    2,
+                    (x0 + (column_width - font.size) // 2, 2),  # type: ignore
                     fill=(0, 0, 0),
                 )
         return image
@@ -403,7 +403,7 @@ class BlitzortungApi:
         font = ImageFont.load_default(16)
         width = int(font.getlength(total_str)) + 8
         height = int(font.size) + 4  # type: ignore
-        image = Image.new("RGBA", (width, height), (12, 66, 156))  # (0, 0, 255, 100))
+        image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
         draw.text(
             (4, 0),
@@ -528,20 +528,23 @@ class BlitzortungApi:
                         activity_data = json.load(f)
                     activity_data = {int(k): v for k, v in activity_data.items()}
                     activity_graph = self.__create_activity_graph(activity_data)
+                    strike_count_image = self.__draw_strike_count(activity_data)
                     final.paste(
                         activity_graph,
                         (
                             final.width - activity_graph.width - 5,
-                            final.height - activity_graph.height - 5,
+                            final.height
+                            - activity_graph.height
+                            - 5
+                            - strike_count_image.height,
                         ),
                         activity_graph,
                     )
-                    strike_count_image = self.__draw_strike_count(activity_data)
                     final.paste(
                         strike_count_image,
                         (
                             final.width - strike_count_image.width - 5,
-                            5,
+                            final.height - strike_count_image.height - 3,
                         ),
                         strike_count_image,
                     )
