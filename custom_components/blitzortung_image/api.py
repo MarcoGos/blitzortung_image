@@ -393,6 +393,26 @@ class BlitzortungApi:
                 )
         return image
 
+    def __draw_strike_count(
+        self,
+        activity_data: dict[int, dict[str, int]],
+    ) -> Image.Image:
+        """Draw the strike count on the activity graph."""
+        total_activity = sum(v["activity"] for v in activity_data.values())
+        total_str = f"Strikes: {total_activity}"
+        font = ImageFont.load_default(16)
+        width = int(font.getlength(total_str)) + 8
+        height = int(font.size) + 4  # type: ignore
+        image = Image.new("RGBA", (width, height), (12, 66, 156))  # (0, 0, 255, 100))
+        draw = ImageDraw.Draw(image)
+        draw.text(
+            (4, 0),
+            total_str,
+            font=font,
+            fill=(255, 255, 255),
+        )
+        return image
+
     async def __async_save_activity_data(self, time_val: datetime) -> None:
         await self._hass.async_add_executor_job(
             self.__save_activity_data,
@@ -515,6 +535,15 @@ class BlitzortungApi:
                             final.height - activity_graph.height - 5,
                         ),
                         activity_graph,
+                    )
+                    strike_count_image = self.__draw_strike_count(activity_data)
+                    final.paste(
+                        strike_count_image,
+                        (
+                            final.width - strike_count_image.width - 5,
+                            5,
+                        ),
+                        strike_count_image,
                     )
 
             image_stream = BytesIO()
