@@ -11,6 +11,7 @@ from io import BytesIO
 from shutil import rmtree
 import asyncio
 from enum import Enum
+from dataclasses import dataclass
 
 from datetime import datetime, timedelta
 from aiohttp.client_exceptions import (
@@ -37,9 +38,44 @@ from .const import (
 )
 from .tools import calculate_mercator_position, draw_rotated_text
 
+
+@dataclass(frozen=True)
+class MapCoords:
+    """Map coordinates for Blitzortung API."""
+
+    left_longitude: float  # left longitude
+    right_longitude: float  # right longitude
+    top_latitude: float  # top latitude
+    bottom_latitude: float  # bottom latitude
+
+
 TIMEOUT = 10
 IMAGES_TO_KEEP = 18
 FILES_TO_KEEP = IMAGES_TO_KEEP
+
+COLUMN_WIDTH = 15
+ACTIVITY_GRAPH_HEIGHT = 75
+STRIKE_MARKER_RADIUS = 2
+FONT_SIZE_TIME = 30
+FONT_SIZE_ACTIVITY_GRAPH = 10
+FONT_SIZE_STRIKE_COUNT = 16
+STRIKE_COUNT_PADDING_X = 8
+STRIKE_COUNT_PADDING_Y = 4
+ANIMATED_GIF_FRAME_DURATION = 200
+ANIMATED_GIF_LAST_FRAME_DURATION = 2000
+AGE_BUCKETS = (0, 20, 40, 60, 80)
+MAP_COORDS_NL = MapCoords(
+    left_longitude=1.556,
+    right_longitude=8.8,
+    top_latitude=54.239,
+    bottom_latitude=47.270,
+)
+MAP_COORDS_TEST = MapCoords(
+    left_longitude=-12.28,
+    right_longitude=34.98,
+    top_latitude=54.239,
+    bottom_latitude=35.77,
+)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -55,42 +91,23 @@ class FileExtension(Enum):
 class BlitzortungApi:
     """Blitzortung API client to fetch weather images."""
 
-    _headers: dict[str, str] = {"User-Agent": "Home Assistant (Blitzortung Image)"}
-    _image_filenames: list[str] = []
-    _storage_path: str
-    _timezone: Any = None
-    _settings: dict[str, Any] = {}
-    _camera: bool = False
-    _username: str = ""
-    _password: str = ""
-    _left_longitude: float = 1.556
-    _right_longitude: float = 8.8
-    _top_latitude: float = 54.239
-    _bottom_latitude: float = 47.270
-
-    # test values for europe
-    # _left_longitude: float = -12.28
-    # _right_longitude: float = 34.98
-    # _top_latitude: float = 54.239
-    # _bottom_latitude: float = 35.77
-
-    _activity_data: dict[int, dict[str, int]] = {
-        0: {"activity": 0},
-        20: {"activity": 0},
-        40: {"activity": 0},
-        60: {"activity": 0},
-        80: {"activity": 0},
-    }
-
     def __init__(self, hass: HomeAssistant, username: str, password: str) -> None:
         self._hass = hass
         self._timezone = self._hass.config.time_zone
         self._session = async_get_clientsession(self._hass)
         self._storage_path = self._hass.config.path(STORAGE_DIR, DOMAIN)
-        self._image_filenames = []
+        self._headers: dict[str, str] = {
+            "User-Agent": "Home Assistant (Blitzortung Image)"
+        }
+        self._image_filenames: list[str] = []
+        self._settings: dict[str, Any] = {}
         self._camera = False
         self._username = username
         self._password = password
+        self._map_coords = MAP_COORDS_NL
+        self._activity_data: dict[int, dict[str, int]] = {
+            k: {"activity": 0} for k in AGE_BUCKETS
+        }
 
     async def async_initialize(self):
         """Initialize the API client."""
@@ -192,7 +209,7 @@ class BlitzortungApi:
         # Get last 5 minutes of data
         ts = datetime.now().timestamp() - timedelta(minutes=5).total_seconds()
         timestamp_ns = int(ts * 1_000_000_000)
-        url = f"https://{self._username}:{self._password}@data.blitzortung.org/Data/Protected/last_strikes.php?time={timestamp_ns}&west={self._left_longitude}&east={self._right_longitude}&north={self._top_latitude}&south={self._bottom_latitude}&sig=0"
+        url = f"https://{self._username}:{self._password}@data.blitzortung.org/Data/Protected/last_strikes.php?time={timestamp_ns}&west={self._map_coords.left_longitude}&east={self._map_coords.right_longitude}&north={self._map_coords.top_latitude}&south={self._map_coords.bottom_latitude}&sig=0"
         return url
 
     async def __async_get_lightning_data(self) -> str:
@@ -288,7 +305,7 @@ class BlitzortungApi:
         text_color = (254, 255, 255)
         outline_color = (0, 0, 0)
         # Font
-        font = ImageFont.load_default(30)
+        font = ImageFont.load_default(FONT_SIZE_TIME)
         textx = 10
         texty = draw._image.height - font.size - 10  # type: ignore
         # Draw time and shadow
@@ -311,16 +328,21 @@ class BlitzortungApi:
                         x, y = calculate_mercator_position(
                             strike["lat"],
                             strike["lon"],
-                            llon=self._left_longitude,
-                            rlon=self._right_longitude,
-                            tlat=self._top_latitude,
+                            llon=self._map_coords.left_longitude,
+                            rlon=self._map_coords.right_longitude,
+                            tlat=self._map_coords.top_latitude,
                             width=draw._image.width,
                         )
                         time = strike["time"] / 1_000_000_000
                         color = self.__determine_color(time)
                         age = self.__determine_age(time)
                         draw.ellipse(
-                            (x - 2, y - 2, x + 2, y + 2),
+                            (
+                                x - STRIKE_MARKER_RADIUS,
+                                y - STRIKE_MARKER_RADIUS,
+                                x + STRIKE_MARKER_RADIUS,
+                                y + STRIKE_MARKER_RADIUS,
+                            ),
                             fill=color,
                             outline=None,
                         )
@@ -337,10 +359,10 @@ class BlitzortungApi:
         max_activity_key = max(
             activity_data, key=lambda k: activity_data[k]["activity"]
         )
-        column_width = 15
+        column_width = COLUMN_WIDTH
         max_key = max(activity_data.keys())
-        font = ImageFont.load_default(10)
-        width, height = (len(activity_data) * column_width + 3, 75)
+        font = ImageFont.load_default(FONT_SIZE_ACTIVITY_GRAPH)
+        width, height = (len(activity_data) * column_width + 3, ACTIVITY_GRAPH_HEIGHT)
 
         image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
@@ -360,7 +382,7 @@ class BlitzortungApi:
             draw.text(
                 (image.width // 2, image.height // 2),
                 "N/A",
-                font=ImageFont.load_default(15),
+                font=ImageFont.load_default(FONT_SIZE_STRIKE_COUNT),
                 fill=(255, 255, 255),
                 anchor="mm",
             )
@@ -401,8 +423,8 @@ class BlitzortungApi:
         total_activity = sum(v["activity"] for v in activity_data.values())
         total_str = f"Strikes: {total_activity}"
         font = ImageFont.load_default(16)
-        width = int(font.getlength(total_str)) + 8
-        height = int(font.size) + 4  # type: ignore
+        width = int(font.getlength(total_str)) + STRIKE_COUNT_PADDING_X
+        height = int(font.size) + STRIKE_COUNT_PADDING_Y  # type: ignore
         image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
         draw.text(
@@ -501,9 +523,9 @@ class BlitzortungApi:
                 marker_x, marker_y = calculate_mercator_position(
                     self.setting(MARKER_LATITUDE),
                     self.setting(MARKER_LONGITUDE),
-                    llon=self._left_longitude,
-                    rlon=self._right_longitude,
-                    tlat=self._top_latitude,
+                    llon=self._map_coords.left_longitude,
+                    rlon=self._map_coords.right_longitude,
+                    tlat=self._map_coords.top_latitude,
                     width=final.width,
                 )
                 final.paste(
@@ -555,8 +577,10 @@ class BlitzortungApi:
             images.append(imageio.imread(image_stream))
 
             duration.append(
-                2000 if index == len(self._image_filenames) - 1 else 200
-            )  # 200 ms for all but the last frame
+                ANIMATED_GIF_LAST_FRAME_DURATION
+                if index == len(self._image_filenames) - 1
+                else ANIMATED_GIF_FRAME_DURATION
+            )
 
         if len(images) > 0:
             imageio.mimwrite(

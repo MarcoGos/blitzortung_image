@@ -4,7 +4,6 @@ NAME = "Blitzortung Image"
 DEFAULT_NAME = NAME.lower()
 DOMAIN = "blitzortung_image"
 MANUFACTURER = "Blitzortung.org"
-MODEL = "Blitzortung Lightning Map Image"
 
 # Platforms
 SENSOR = "sensor"

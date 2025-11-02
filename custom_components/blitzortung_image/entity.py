@@ -1,7 +1,7 @@
 """Blitzortung Image Entity Base Class"""
 
 from homeassistant.core import callback
-from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo, DeviceEntryType
 from homeassistant.helpers.entity import EntityDescription
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -24,6 +24,7 @@ class BlitzortungImageEntity(CoordinatorEntity[BlitzortungDataUpdateCoordinator]
         super().__init__(coordinator)
         self.entity_description = description
         self.device_info = DeviceInfo(
+            entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, entry_id)},
             manufacturer=MANUFACTURER,
             name=NAME,
