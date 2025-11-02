@@ -292,7 +292,7 @@ class BlitzortungApi:
 
         draw = ImageDraw.Draw(final)
 
-        self.__draw_lightning(draw)
+        self.__draw_strikes(draw)
         self.__draw_time(draw, time_val)
 
         filename = self.__get_filename(time_val, FileExtension.PNG)
@@ -315,7 +315,7 @@ class BlitzortungApi:
             draw.text((textx, texty + adj), time_str, font=font, fill=outline_color)
         draw.text((textx, texty), time_str, font=font, fill=text_color)
 
-    def __draw_lightning(self, draw: ImageDraw.ImageDraw) -> None:
+    def __draw_strikes(self, draw: ImageDraw.ImageDraw) -> None:
         self.__reset_activity_data()
         for image_filename in self._image_filenames.copy():
             data_file = image_filename[:-4] + FileExtension.DATA.value
@@ -333,20 +333,26 @@ class BlitzortungApi:
                             tlat=self._map_coords.top_latitude,
                             width=draw._image.width,
                         )
-                        time = strike["time"] / 1_000_000_000
-                        color = self.__determine_color(time)
-                        age = self.__determine_age(time)
-                        draw.ellipse(
-                            (
-                                x - STRIKE_MARKER_RADIUS,
-                                y - STRIKE_MARKER_RADIUS,
-                                x + STRIKE_MARKER_RADIUS,
-                                y + STRIKE_MARKER_RADIUS,
-                            ),
-                            fill=color,
-                            outline=None,
-                        )
-                        self._activity_data[age]["activity"] += 1
+                        if (
+                            x >= 0
+                            and x < draw._image.width
+                            and y >= 0
+                            and y < draw._image.height
+                        ):
+                            time = strike["time"] / 1_000_000_000
+                            color = self.__determine_color(time)
+                            age = self.__determine_age(time)
+                            draw.ellipse(
+                                (
+                                    x - STRIKE_MARKER_RADIUS,
+                                    y - STRIKE_MARKER_RADIUS,
+                                    x + STRIKE_MARKER_RADIUS,
+                                    y + STRIKE_MARKER_RADIUS,
+                                ),
+                                fill=color,
+                                outline=None,
+                            )
+                            self._activity_data[age]["activity"] += 1
 
     def __reset_activity_data(self) -> None:
         for v in self._activity_data.values():
