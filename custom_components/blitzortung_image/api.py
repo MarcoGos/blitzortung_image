@@ -325,7 +325,7 @@ class BlitzortungApi:
         font: ImageFont.ImageFont,
         text_color: tuple[int, int, int],
         outline_color: tuple[int, int, int],
-        anchor: str = "la",
+        anchor: str | None = None,
     ) -> None:
         x, y = position
         for adj in range(-2, 3):
