@@ -307,13 +307,31 @@ class BlitzortungApi:
         # Font
         font = ImageFont.load_default(FONT_SIZE_TIME)
         textx = 10
-        texty = draw._image.height - font.size - 10  # type: ignore
-        # Draw time and shadow
-        time_str = time_val.astimezone(timezone(self._timezone)).strftime("%H:%M")
+        texty = int(draw._image.height - font.size - 10)  # type: ignore
+        self.__draw_text_with_shadow(
+            draw,
+            (textx, texty),
+            time_val.astimezone(timezone(self._timezone)).strftime("%H:%M"),
+            font,  # type: ignore
+            text_color,
+            outline_color,
+        )
+
+    def __draw_text_with_shadow(
+        self,
+        draw: ImageDraw.ImageDraw,
+        position: tuple[int, int],
+        text: str,
+        font: ImageFont.ImageFont,
+        text_color: tuple[int, int, int],
+        outline_color: tuple[int, int, int],
+        anchor: str = "lt",
+    ) -> None:
+        x, y = position
         for adj in range(-2, 3):
-            draw.text((textx + adj, texty), time_str, font=font, fill=outline_color)
-            draw.text((textx, texty + adj), time_str, font=font, fill=outline_color)
-        draw.text((textx, texty), time_str, font=font, fill=text_color)
+            draw.text((x + adj, y), text, font=font, fill=outline_color, anchor=anchor)
+            draw.text((x, y + adj), text, font=font, fill=outline_color, anchor=anchor)
+        draw.text((x, y), text, font=font, fill=text_color, anchor=anchor)
 
     def __draw_strikes(self, draw: ImageDraw.ImageDraw) -> None:
         self.__reset_activity_data()
@@ -385,11 +403,13 @@ class BlitzortungApi:
             width=1,
         )
         if max_activity == 0:
-            draw.text(
+            self.__draw_text_with_shadow(
+                draw,
                 (image.width // 2, image.height // 2),
                 "N/A",
-                font=ImageFont.load_default(FONT_SIZE_STRIKE_COUNT),
-                fill=(255, 255, 255),
+                font=ImageFont.load_default(FONT_SIZE_STRIKE_COUNT),  # type: ignore
+                text_color=(255, 255, 255),
+                outline_color=(0, 0, 0),
                 anchor="mm",
             )
             return image
@@ -433,11 +453,13 @@ class BlitzortungApi:
         height = int(font.size) + STRIKE_COUNT_PADDING_Y  # type: ignore
         image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
-        draw.text(
+        self.__draw_text_with_shadow(
+            draw,
             (4, 0),
             total_str,
-            font=font,
-            fill=(255, 255, 255),
+            font,  # type: ignore
+            text_color=(255, 255, 255),
+            outline_color=(0, 0, 0),
         )
         return image
 
