@@ -52,7 +52,7 @@ The following action will be registered
 
 ## Examples
 
-<img src="assets/example.jpg" alt="drawing" width="400"/>
+<img src="https://github.com/user-attachments/assets/cc590b7a-9f48-453f-b7fb-4b9c68ca0468" alt="example" width="400"/>
 
 [commits-shield]: https://img.shields.io/github/commit-activity/y/MarcoGos/blitzortung_image.svg?style=for-the-badge
 [commits]: https://github.com/MarcoGos/blitzortung_image/commits/main
