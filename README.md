@@ -52,6 +52,8 @@ The following action will be registered
 
 ## Examples
 
+<img src="assets/example.jpg" alt="drawing" width="400"/>
+
 [commits-shield]: https://img.shields.io/github/commit-activity/y/MarcoGos/blitzortung_image.svg?style=for-the-badge
 [commits]: https://github.com/MarcoGos/blitzortung_image/commits/main
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
