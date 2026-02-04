@@ -61,7 +61,7 @@ class BlitzortungImageSensor(BlitzortungImageEntity, SensorEntity):
             description=description,
             entry_id=entry_id,
         )
-        self.entity_id = f"{SENSOR_DOMAIN}.{DEFAULT_NAME} {description.key}"
+        self.entity_id = f"{SENSOR_DOMAIN}.{DEFAULT_NAME}_{description.key}"
 
     @property
     def native_value(self) -> StateType:  # type: ignore
