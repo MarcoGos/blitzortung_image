@@ -1,7 +1,7 @@
 """Constants for the Blitzortung Image integration."""
 
 NAME = "Blitzortung Image"
-DEFAULT_NAME = NAME.lower()
+DEFAULT_NAME = NAME.replace(" ", "_").lower()
 DOMAIN = "blitzortung_image"
 MANUFACTURER = "Blitzortung.org"
 
