@@ -18,7 +18,7 @@ from aiohttp.client_exceptions import (
     ClientConnectorDNSError,
     ConnectionTimeoutError,
 )
-from pytz import timezone
+from pytz import timezone, utc
 
 import async_timeout
 from homeassistant.core import HomeAssistant
@@ -86,6 +86,7 @@ class FileExtension(Enum):
     PNG = ".png"
     ACTIVITY = ".activity"
     DATA = ".data"
+    OVERLAY = "-overlay.png"
 
 
 class BlitzortungApi:
@@ -96,6 +97,7 @@ class BlitzortungApi:
         self._timezone = self._hass.config.time_zone
         self._session = async_get_clientsession(self._hass)
         self._storage_path = self._hass.config.path(STORAGE_DIR, DOMAIN)
+        os.makedirs(self._storage_path, exist_ok=True)
         self._headers: dict[str, str] = {
             "User-Agent": "Home Assistant (Blitzortung Image)"
         }
@@ -181,8 +183,8 @@ class BlitzortungApi:
         if not self.__is_camera_registered():
             return
 
-        time_val = datetime.now()
         lightning_data = await self.__async_get_lightning_data()
+        time_val = datetime.now(utc)
         await self.__async_save_lightning_data(time_val, lightning_data)
         await self.__async_create_image(time_val)
         self.__add_filename_to_images(time_val)
@@ -275,12 +277,20 @@ class BlitzortungApi:
         with Image.open(f"custom_components/{DOMAIN}/images/legend.png") as image:
             return image.convert("RGBA")
 
+    def __get_lightning_image(self) -> Image.Image:
+        with Image.open(f"custom_components/{DOMAIN}/images/lightning.png") as image:
+            return image.convert("RGBA")
+
     async def __async_create_image(
         self,
         time_val: datetime,
     ) -> None:
         await self._hass.async_add_executor_job(
             self.__create_image,
+            time_val,
+        )
+        await self._hass.async_add_executor_job(
+            self.__create_image_overlay,
             time_val,
         )
 
@@ -297,6 +307,21 @@ class BlitzortungApi:
 
         filename = self.__get_filename(time_val, FileExtension.PNG)
         final.save(filename, "PNG")
+        mod_time = int(time_val.timestamp())
+        os.utime(filename, (mod_time, mod_time))
+
+    def __create_image_overlay(
+        self,
+        time_val: datetime,
+    ) -> None:
+        final = self.__get_background_image()
+        blank = Image.new("RGBA", final.size, (0, 0, 0, 0))
+
+        draw = ImageDraw.Draw(blank)
+        self.__draw_strikes(draw, overlay=True)
+
+        filename = self.__get_filename(time_val, FileExtension.OVERLAY)
+        blank.save(filename, "PNG")
         mod_time = int(time_val.timestamp())
         os.utime(filename, (mod_time, mod_time))
 
@@ -333,8 +358,9 @@ class BlitzortungApi:
             draw.text((x, y + adj), text, font=font, fill=outline_color, anchor=anchor)
         draw.text((x, y), text, font=font, fill=text_color, anchor=anchor)
 
-    def __draw_strikes(self, draw: ImageDraw.ImageDraw) -> None:
+    def __draw_strikes(self, draw: ImageDraw.ImageDraw, overlay: bool = False) -> None:
         self.__reset_activity_data()
+        lightning = self.__get_lightning_image()
         for image_filename in self._image_filenames.copy():
             data_file = image_filename[:-4] + FileExtension.DATA.value
             if os.path.exists(data_file):
@@ -360,17 +386,32 @@ class BlitzortungApi:
                             time = strike["time"] / 1_000_000_000
                             color = self.__determine_color(time)
                             age = self.__determine_age(time)
-                            draw.ellipse(
-                                (
-                                    x - STRIKE_MARKER_RADIUS,
-                                    y - STRIKE_MARKER_RADIUS,
-                                    x + STRIKE_MARKER_RADIUS,
-                                    y + STRIKE_MARKER_RADIUS,
-                                ),
-                                fill=color,
-                                outline=None,
-                            )
+                            if not overlay:
+                                draw.ellipse(
+                                    (
+                                        x - STRIKE_MARKER_RADIUS,
+                                        y - STRIKE_MARKER_RADIUS,
+                                        x + STRIKE_MARKER_RADIUS,
+                                        y + STRIKE_MARKER_RADIUS,
+                                    ),
+                                    fill=color,
+                                    outline=None,
+                                )
+                            else:
+                                lx, ly = lightning.size
+                                top_left = (int(x - lx / 2), int(y - ly / 2))
+                                draw._image.paste(lightning, top_left, lightning)  # type: ignore
+
                             self._activity_data[age]["activity"] += 1
+
+        if overlay:
+            lightning = lightning.resize((lightning.width * 2, lightning.height * 2))
+            lx, ly = lightning.size
+            top_left = (
+                93,
+                int(draw._image.height - FONT_SIZE_TIME + 2),
+            )
+            draw._image.paste(lightning, top_left, lightning)  # type: ignore
 
     def __reset_activity_data(self) -> None:
         for v in self._activity_data.values():

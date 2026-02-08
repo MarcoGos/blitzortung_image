@@ -3,13 +3,10 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
-from homeassistant.components.sensor.const import (
-    DOMAIN as SENSOR_DOMAIN,
-    SensorDeviceClass,
-)
+from homeassistant.components.sensor.const import SensorDeviceClass
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
-from .const import DOMAIN, DEFAULT_NAME, LAST_UPDATED
+from .const import DOMAIN, LAST_UPDATED
 from .coordinator import BlitzortungDataUpdateCoordinator
 from .entity import BlitzortungImageEntity
 
@@ -61,7 +58,7 @@ class BlitzortungImageSensor(BlitzortungImageEntity, SensorEntity):
             description=description,
             entry_id=entry_id,
         )
-        self.entity_id = f"{SENSOR_DOMAIN}.{DEFAULT_NAME}_{description.key}"
+        self._attr_unique_id = f"{entry_id}_{description.key}".lower()
 
     @property
     def native_value(self) -> StateType:  # type: ignore

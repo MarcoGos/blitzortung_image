@@ -29,10 +29,10 @@
         },
         "number": {
             "marker_latitude": {
-                "name": "Marker breedtegraad"
+                "name": "Markering breedtegraad"
             },
             "marker_longitude": {
-                "name": "Marker lengtegraad"
+                "name": "Markering lengtegraad"
             }
         },
         "sensor": {

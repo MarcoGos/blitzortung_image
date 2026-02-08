@@ -4,11 +4,11 @@ from homeassistant.components.number import NumberEntity, NumberEntityDescriptio
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
-from homeassistant.components.number.const import DOMAIN as NUMBER_DOMAIN, NumberMode
+from homeassistant.components.number.const import NumberMode
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .coordinator import BlitzortungDataUpdateCoordinator
-from .const import DOMAIN, DEFAULT_NAME, MARKER_LATITUDE, MARKER_LONGITUDE
+from .const import DOMAIN, MARKER_LATITUDE, MARKER_LONGITUDE
 from .entity import BlitzortungImageEntity
 
 DESCRIPTIONS: list[NumberEntityDescription] = [
@@ -69,7 +69,7 @@ class BlitzortungImageNumber(BlitzortungImageEntity, NumberEntity):
         super().__init__(
             coordinator=coordinator, description=description, entry_id=entry_id
         )
-        self.entity_id = f"{NUMBER_DOMAIN}.{DEFAULT_NAME}_{description.key}"
+        self._attr_unique_id = f"{entry_id}_{description.key}".lower()
 
     @property
     def native_value(self) -> float | None:

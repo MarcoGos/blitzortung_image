@@ -9,11 +9,11 @@ from homeassistant.components.switch import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
-from homeassistant.components.switch.const import DOMAIN as SWITCH_DOMAIN
+
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .coordinator import BlitzortungDataUpdateCoordinator
-from .const import DOMAIN, DEFAULT_NAME, SHOW_MARKER, SHOW_LEGEND, SHOW_ACTIVITY_GRAPH
+from .const import DOMAIN, SHOW_MARKER, SHOW_LEGEND, SHOW_ACTIVITY_GRAPH
 from .entity import BlitzortungImageEntity
 
 DESCRIPTIONS: list[SwitchEntityDescription] = [
@@ -79,7 +79,7 @@ class BlitzortungImageSwitch(BlitzortungImageEntity, SwitchEntity):
             entry_id=entry_id,
         )
         self.coordinator = coordinator
-        self.entity_id = f"{SWITCH_DOMAIN}.{DEFAULT_NAME}_{description.key}"
+        self._attr_unique_id = f"{entry_id}_{description.key}".lower()
 
     @property
     def is_on(self) -> bool | None:

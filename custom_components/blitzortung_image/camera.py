@@ -4,10 +4,9 @@ from dataclasses import dataclass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.components.camera import Camera, CameraEntityDescription
-from homeassistant.components.camera.const import DOMAIN as CAMERA_DOMAIN
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DEFAULT_NAME, DOMAIN, LIGHTNING
+from .const import DOMAIN, LIGHTNING
 from .coordinator import BlitzortungDataUpdateCoordinator
 from .entity import BlitzortungImageEntity
 
@@ -71,7 +70,7 @@ class BlitzortungImageCamera(BlitzortungImageEntity, Camera):
         )
 
         self._attr_content_type = "image/gif"
-        self.entity_id = f"{CAMERA_DOMAIN}.{DEFAULT_NAME}_{description.key}"
+        self._attr_unique_id = f"{entry_id}_{description.key}".lower()
 
     async def async_camera_image(
         self, width: int | None = None, height: int | None = None
