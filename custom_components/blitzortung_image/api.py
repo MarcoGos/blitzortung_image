@@ -188,9 +188,9 @@ class BlitzortungApi:
         await self.__async_save_lightning_data(time_val, lightning_data)
         await self.__async_create_image(time_val)
         self.__add_filename_to_images(time_val)
-        await self.__async_save_activity_data(time_val)
-
         await self.__async_create_animated_gif()
+
+        await self.__async_create_image_overlay(time_val)
 
         await self.async_set_setting(
             LAST_UPDATED,
@@ -289,6 +289,12 @@ class BlitzortungApi:
             self.__create_image,
             time_val,
         )
+        await self.__async_save_activity_data(time_val)
+
+    async def __async_create_image_overlay(
+        self,
+        time_val: datetime,
+    ) -> None:
         await self._hass.async_add_executor_job(
             self.__create_image_overlay,
             time_val,
