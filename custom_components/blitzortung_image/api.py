@@ -412,7 +412,6 @@ class BlitzortungApi:
                                     draw._image.paste(lightning, top_left, lightning)  # type: ignore
 
         if overlay:
-            lightning = lightning.resize((lightning.width * 2, lightning.height * 2))
             lx, ly = lightning.size
             top_left = (
                 93,
