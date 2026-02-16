@@ -384,9 +384,8 @@ class BlitzortungApi:
                             and y < draw._image.height
                         ):
                             time = strike["time"] / 1_000_000_000
-                            color = self.__determine_color(time)
-                            age = self.__determine_age(time)
                             if not overlay:
+                                color = self.__determine_color(time)
                                 draw.ellipse(
                                     (
                                         x - STRIKE_MARKER_RADIUS,
@@ -397,12 +396,14 @@ class BlitzortungApi:
                                     fill=color,
                                     outline=None,
                                 )
+                                age_index = self.__determine_age_index(time)
+                                self._activity_data[age_index]["activity"] += 1
                             else:
-                                lx, ly = lightning.size
-                                top_left = (int(x - lx / 2), int(y - ly / 2))
-                                draw._image.paste(lightning, top_left, lightning)  # type: ignore
-
-                            self._activity_data[age]["activity"] += 1
+                                age = datetime.now().timestamp() - time
+                                if age <= 5 * 60:
+                                    lx, ly = lightning.size
+                                    top_left = (int(x - lx / 2), int(y - ly / 2))
+                                    draw._image.paste(lightning, top_left, lightning)  # type: ignore
 
         if overlay:
             lightning = lightning.resize((lightning.width * 2, lightning.height * 2))
@@ -525,10 +526,10 @@ class BlitzortungApi:
             60: (255, 85, 0),  # Dark Orange
             80: (255, 0, 0),  # Red
         }
-        age = self.__determine_age(strike_time)
+        age = self.__determine_age_index(strike_time)
         return colors.get(age, (191, 0, 0))
 
-    def __determine_age(self, strike_time: float) -> int:
+    def __determine_age_index(self, strike_time: float) -> int:
         """Determine age bucket based on age of the strike."""
         age = datetime.now().timestamp() - strike_time
         if age < 20 * 60:
@@ -661,7 +662,7 @@ class BlitzortungApi:
 
     def __build_images_list(self) -> None:
         self._image_filenames = []
-        files = glob.glob(os.path.join(self.__get_storage_path(), "*.png"))
+        files = glob.glob(os.path.join(self.__get_storage_path(), "*[0-9].png"))
         files.sort()
         for file in files:
             self._image_filenames.append(file)
