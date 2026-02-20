@@ -573,6 +573,12 @@ class BlitzortungApi:
                     "Removed old data file: %s",
                     filename[:-4] + FileExtension.DATA.value,
                 )
+            if os.path.exists(filename[:-4] + FileExtension.OVERLAY.value):
+                os.remove(filename[:-4] + FileExtension.OVERLAY.value)
+                _LOGGER.debug(
+                    "Removed old overlay file: %s",
+                    filename[:-4] + FileExtension.OVERLAY.value,
+                )
 
     async def __async_create_animated_gif(self) -> None:
         await self._hass.async_add_executor_job(self.__create_animated_gif)
