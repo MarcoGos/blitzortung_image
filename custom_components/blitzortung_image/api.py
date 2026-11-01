@@ -665,7 +665,7 @@ class BlitzortungApi:
 
         if len(images) > 0:
             imageio.mimwrite(
-                f"{self.__get_storage_path()}/animated.png",
+                f"{self.__get_storage_path()}/animated.gif",
                 images,
                 loop=0,
                 duration=duration if len(duration) > 1 else duration[0],
@@ -684,7 +684,7 @@ class BlitzortungApi:
         return await self._hass.async_add_executor_job(self.__get_animated_image)
 
     def __get_animated_image(self) -> bytes | None:
-        animated_path = f"{self.__get_storage_path()}/animated.png"
+        animated_path = f"{self.__get_storage_path()}/animated.gif"
         if os.path.exists(animated_path):
             with open(animated_path, "rb") as image_file:
                 return image_file.read()
