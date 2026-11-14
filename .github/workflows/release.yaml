@@ -1,0 +1,28 @@
+
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    name: Build and attach release zip
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build blitzortung_image.zip
+        run: |
+          cd custom_components/blitzortung_image
+          zip -r ../../blitzortung_image.zip . \
+            -x "*__pycache__*" \
+            -x "*.pyc" \
+            -x "*.pytest_cache*" \
+            -x "*.DS_Store*"
+      - name: Upload zip to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: blitzortung_image.zip
+          fail_on_unmatched_files: true
